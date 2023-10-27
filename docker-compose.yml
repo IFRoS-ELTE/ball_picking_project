@@ -1,0 +1,58 @@
+version: "3.9"
+services:
+  ros_master:
+    image: ros:noetic-ros-base-focal
+    container_name: ros_noetic_master
+    network_mode: "host"
+    command: roscore
+
+  bp_r1_lidar_service:
+    build:
+      context: ./robosense_lidar_module/docker
+      dockerfile: Dockerfile
+    image: ros1_rs_lidar_driver:latest
+    container_name: ros1_rs_lidar
+    network_mode: "host"
+    privileged: true
+    volumes:
+      - ./robosense_lidar_module/src:/root/ros_ws/src
+    tty: true
+    environment:
+      - DISPLAY
+    depends_on:
+      - ros_master
+    # entrypoint: ["tail", "-f", "/dev/null"]
+
+  bp_r1_imu_service:
+    build:
+      context: ./xsens_imu_module/docker
+      dockerfile: Dockerfile
+    image: ros1_xsens_imu_driver:latest
+    container_name: ros1_xsens_imu
+    network_mode: "host"
+    privileged: true
+    volumes:
+      - ./xsens_imu_module/src:/root/ros_ws/src
+    tty: true
+    environment:
+      - DISPLAY
+    depends_on:
+      - ros_master
+    # entrypoint: ["tail", "-f", "/dev/null"]
+
+  bp_r1_slam_service:
+    build:
+      context: ./scout2_2d_slam_module/docker
+      dockerfile: Dockerfile
+    image: ros1_2d_slam:latest
+    network_mode: "host"
+    container_name: ros1_2d_slam
+    privileged: true
+    volumes:
+      - ./scout2_2d_slam_module/src:/root/ros_ws/src
+    tty: true
+    environment:
+      - DISPLAY
+    depends_on:
+      - ros_master
+    # entrypoint: ["tail", "-f", "/dev/null"]
