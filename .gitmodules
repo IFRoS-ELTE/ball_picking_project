@@ -8,3 +8,6 @@
 	path = scout2_2d_slam_module
 	url = https://github.com/IFRoS-ELTE/scout2_2d_slam_module.git
 	branch = ros1_initial
+[submodule "exploration_module"]
+	path = exploration_module
+	url = https://github.com/IFRoS-ELTE/exploration_module.git
