@@ -56,3 +56,20 @@ services:
     depends_on:
       - ros_master
     # entrypoint: ["tail", "-f", "/dev/null"]
+
+  bp_r1_exp_service:
+    build:
+      context: ./exploration_module/docker
+      dockerfile: Dockerfile
+    image: ros1_exploration:latest
+    network_mode: "host"
+    container_name: ros1_exploration
+    privileged: true
+    volumes:
+      - ./exploration_module/src:/root/ros_ws/src
+    tty: true
+    environment:
+      - DISPLAY
+    depends_on:
+      - ros_master
+    # entrypoint: ["tail", "-f", "/dev/null"]
