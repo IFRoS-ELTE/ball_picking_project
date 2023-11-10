@@ -72,4 +72,5 @@ services:
       - DISPLAY
     depends_on:
       - ros_master
+      - bp_r1_slam_service
     # entrypoint: ["tail", "-f", "/dev/null"]
