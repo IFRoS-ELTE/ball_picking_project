@@ -70,6 +70,7 @@ services:
     tty: true
     environment:
       - DISPLAY
+      - AUTO_EXPLORE=true
     depends_on:
       - ros_master
       - bp_r1_slam_service
