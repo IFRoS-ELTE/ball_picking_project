@@ -401,7 +401,7 @@ However, I tried something like this for quite a while and I was not successful 
 
 ### 4.4 About ROS2 ...
 
-The initial idea of this project was to implement everything in ROS2. The thing is, in the end we settled for ROS(1) es everyone knew how it worked and we did not have a lot of time to also port existing code to the new framework. However, when you are willing to do so, you can basically follow the same Dockerization approach, but to my current knowledge, I am pretty sure you need to set up a Docker network so that the different ROS 2 containers can communicate with each other. If you want to have a brief introduction and a small demo of how this can look like, you can check out my ROS 2 Docker demo repository on Github.
+The initial idea of this project was to implement everything in ROS2. The thing is, in the end we settled for ROS(1) es everyone knew how it worked and we did not have a lot of time to also port existing code to the new framework. However, when you are willing to do so, you can basically follow the same Dockerization approach, but to my current knowledge, I am pretty sure you need to set up a Docker network so that the different ROS 2 containers can communicate with each other. If you want to have a brief introduction and a small demo of how this can look like, you can check out my ROS 2 Docker [demo repository](https://github.com/KevS272/ros_demo_project) on Github.
 
 ---
 
