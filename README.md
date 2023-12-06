@@ -16,7 +16,7 @@ The mobile base uses LiDAR and IMU data to localize itself and map the environme
 
 ### Visualization of autonomous exploration
 
-![Video of the robot exploring the area autonomously](./docs/costmap_exploration.mp4)
+![Video of the robot exploring the area autonomously](./docs/costmap_exploration.png)
 
 ## Setup
 
