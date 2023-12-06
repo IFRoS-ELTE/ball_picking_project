@@ -378,3 +378,37 @@ sudo docker logs <CONTAINER_NAME/CONTAINER_ID>
 ```
 
 This gives you the container's CLI output. If you want to get more intricate, refer to the official Docker [documentation](https://docs.docker.com/engine/reference/commandline/logs/).
+
+## 4. Limitations
+
+I talked all the time about how nice Docker is. However, the proposed (and applied) approach is not entirely without flaws. Additionally, there are certain things that maybe not be a directly limiting factor but still could use some form of improvement. Let's quickly give an overview and think about how to solve the issues in the future.
+
+### 4.1 Building the catkin workspace inside the container
+
+I mentioned earlier when going through the Dockerfile as well as the entrypoint script that we are only building the catkin (or colcon for ROS2) workspace after we created a container. On one hand, this is nice for development as we can try out things with the catkin workspace easily. When there is an error during the build process (which can be quite common when developing a ROS package), it does not matter at all. However, If we get past the development stage and to the actual deployment of the finalized code, building the workspace when the container gets created can be a bit tiresome.
+A more professional way would be to then clone all the repositories during the build stage of the image and directly build it there. This means you can host the container on a container registry like Docker Hub (or your private registry) and pull the container whenever you need it onto your robot. Then you only have to instantiate your containers and everything works in a matter of a couple of seconds. The necessity to build the workspace first is no longer there. However, since we are not professionally shipping software, our approach of building after instantiating the container should be fine.
+
+### 4.2 Root user and created files
+
+The biggest annoyance in the current setup is the fact that we are executing everything concerning Docker as root. If you are inside the container and create a new file (for example in your ROS package git repository), it also gets created by the root user. If you want to modify this file now from your host (this is possible because all the ROS package repositories are in a folder that is shared between the host and the container), you also need root privileges. For example, VS Code will ask for the root password in order to be able to save the changes to the file.
+
+There are possibilities to play around with different users and Docker, but I did not care enough until now to figure out a good solution.
+
+### 4.3 Docker networking is good practice but makes things more complicated
+
+In the approach described above, we launch all our containers with the `--network host` flag. This is convenient because everything that is related to network communication works as if all the stuff was running on the host OS, but there are better ways to do things. In Docker (and especially in the Docker compose file), you are able to configure your own virtual network which will be used by our containers to communicate. This is considered best practice as it gives an additional layer of abstraction which also results in some security benefits. You can read all about how to set up Docker networks using compose in the [official Docker documentation](https://docs.docker.com/compose/networking/). Now, everything Docker is encapsulated in its own network. But there is one issue, especially when we are talking about sensors that are connected via Ethernet, like LiDARs. In order to be able to transmit the data into the virtual Docker network, it must be part of that network. The solution would be to set up the LiDAR to be in the subnet of the Docker network. Maybe there is also a possibility to not change the LiDARs IP but rather forward the data to another IP and port inside the Docker subnet.
+However, I tried something like this for quite a while and I was not successful yet. However, there must be some kind of solution so I am still eager to investigate this further.
+
+### 4.4 About ROS2 ...
+
+The initial idea of this project was to implement everything in ROS2. The thing is, in the end we settled for ROS(1) es everyone knew how it worked and we did not have a lot of time to also port existing code to the new framework. However, when you are willing to do so, you can basically follow the same Dockerization approach, but to my current knowledge, I am pretty sure you need to set up a Docker network so that the different ROS 2 containers can communicate with each other. If you want to have a brief introduction and a small demo of how this can look like, you can check out my ROS 2 Docker demo repository on Github.
+
+---
+
+## P.S.
+
+Now, I think this is around 90% of what I know about Docker in one Markdown file. I hope it helps to understand the wonderful world of Containerization in the domain of Robotics. By the way. The containerization approach to creating multiple containers for a larger system was heavily inspired by the system architecture of TU Munich's Indy Autonomous race car. Yes, autonomous Indy Cars that race with up to 300mp/h! If you want to learn more about the competition, system architecture and containerization approach, check out [this paper](https://arxiv.org/abs/2205.15979).
+
+Now, you're officially the captain of your own container ship! :)
+
+\- Kevin
