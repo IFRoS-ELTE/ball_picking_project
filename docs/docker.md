@@ -1,4 +1,4 @@
-# Containerization approach overview
+# Containerization Approach
 
 This repository repository acts as a management framework for the 2023 robot ball-picking project of the IFRoS/AUS lab course at ELTE. To achieve this, it includes multiple submodules for individual tasks that are executable in Docker containers. These containers are then configured by a Docker compose file in the main project repository.
 
