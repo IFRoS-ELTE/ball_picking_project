@@ -6,7 +6,7 @@ Since Docker was not used in the context of this lab course until now, this file
 
 - Why to use Docker
 - Architectural considerations for containerizing robotics projects
-- Basic principles and commands for Docker
+- Basic How-To's and commands for Docker
 - Limitations of the current approach
 
 For further questions, do not hesitate to contact the creator of this containerized mess: <br>
@@ -89,7 +89,7 @@ The dockerfile includes all the instructions on how to set up the image that the
 
 Now, let us go through the significant parts of the dockerfile to better understand what is happening.
 
-_Line 1:_ This line defines the image that should be used as a foundation for the custom image we are building using the `FROM` keyword. In this case, we use a ROS noetic image from the official ROS registry on Dockerhub. It runs Ubuntu 20.04 focal fossa.
+_Line 1:_ This line defines the image that should be used as a foundation for the custom image we are building using the `FROM` keyword. In this case, we use a ROS noetic image from the official ROS registry on Docker Hub. It runs Ubuntu 20.04 focal fossa.
 
 _Line 3:_ Here we define our ROS version as an environment variable using the `ENV` keyword. This makes it easier to switch between ROS versions as we can use this variable as a substitution when we install the ROS packages later.
 
@@ -170,7 +170,7 @@ Speaking of the compose file of the project repository, most of the configuratio
 
 ![First part of the ball picking project compose file](compose_project.png)
 
-As you can see in the image above, we define multiple container configurations, that are launched as _"services"_ by Docker compose. First we configure _service_ `ros_master`, using the `ros:noetic-ros-base-focal` _image_, which is also the base for most of the other containers. Otherwise, it also can be pulled directly from Dockerhub (a container registry where you can download premade images and also host your own). The container will have the _container_name_ `ros_noetic_master`, it uses the _network_mode_ `host`, meaning the container will use the host network, meaning from a network perspective, there is no difference between running things inside or outside the container. This is a nice simplification for ROS 1 systems. However, there are some issues with this and it can not be used for ROS 2 systems (more on that in the Limitation section at the end).
+As you can see in the image above, we define multiple container configurations, that are launched as _"services"_ by Docker compose. First we configure _service_ `ros_master`, using the `ros:noetic-ros-base-focal` _image_, which is also the base for most of the other containers. Otherwise, it also can be pulled directly from Docker Hub (a container registry where you can download premade images and also host your own). The container will have the _container_name_ `ros_noetic_master`, it uses the _network_mode_ `host`, meaning the container will use the host network, meaning from a network perspective, there is no difference between running things inside or outside the container. This is a nice simplification for ROS 1 systems. However, there are some issues with this and it can not be used for ROS 2 systems (more on that in the Limitation section at the end).
 Also, during startup, the container will execute the _command_ `roscore`.
 
 The next service we configure is our lidar*driver module, which includes the necessary drivers and ROS interface for the Robosense lidars of our robots. Since the \_robosense_lidar_module* is a submodule of the project repository, we need to make sure that the paths to the docker folder containing the dockerfile as well as the src folder with all the ROS packages are configured correctly. Let's go through all the configurations:
@@ -178,3 +178,203 @@ First, for our _service_ `bp_r1_lidar_service` (which just means "ball picking r
 The resulting container _image_ will then be called `ros1_rs_lidar_driver:latest` and the instantiated container will have the _container_name_ `ros1_rs_lidar`. The _network_mode_ is also `host`and the _privileged_ flag is set to `true`, meaning the container is able to access the host's interfaces like USB. The _volumes_ describe which folders of your host should be mounted where in your container. Here, we mount the `./robosense_lidar_module/src:/root/ros_ws/src` means that we are mounting the src folder of our lidar submodule to the src folder of our ros workspace inside the container. The _tty_ flag is set to `true` in order to keep the container running until we shut it down. The _environment_ section lists environment variables that should be set inside the container. In this case, we set the DISPLAY variable so that we can output GUI applications from the container. Lastly, the _depends_on_ configuration specifies which services should be launched before this service. In this case, we specify only the `ros_master` service. Unlike in the stand-alone case, we don't make use of the _entrypoint_ configuration to overwrite the entrypoint script of the image and therefore not automatically execute the roslaunch file. However, should we need it for debugging, it still can be uncommented.
 
 Just like this, all the other submodules of the project repository are configured to construct our multi-container ROS system block by block.
+
+## 3. Basic How-To's and commands for Docker
+
+Now I will give brief overview over the important commands you need to know to do basic things in Docker. While there are Docker GUI applications for all platforms available, I will still focus exclusively on the CLI version.
+
+The things you should know about are:
+
+1. How to install Docker
+2. How to pull an image from Docker Hub
+3. How to start, stop and delete containers
+4. How to build and delete images
+5. How to get information about your existing images and containers
+6. How to use Docker compose commands
+7. Basic debugging tools for Docker
+
+### 3.1 How to install Docker
+
+I'll make it quick: Just follow the installation instructions on [Docker's official website](https://docs.docker.com/get-docker/). They want you to install the Desktop version, which is fine, since it still comes with the whole CLI version (and Docker Compose as well).
+
+### 3.2 How to pull an image from Docker Hub
+
+There are multiple ways to get a container image. One way could be to build one like we did in our project. But even our Docker images are based on pre-made ones from Docker Hub. When we are building our image using the Dockerfile, we are simply automatically pulling the base image that we have specified using the `FROM` keyword.
+
+So, If you want to pull an image from Docker Hub manually, all you have to go to [Docker Hub](https://hub.docker.com/) and look for whatever image you would like to pull. When searching four "ROS", we directly find the official ROS Docker images in the list. [Here](https://hub.docker.com/_/ros), you can find a bunch of different tags, which are different images from the selection of "ros" images, that you can pull.
+If we, for example, want to pull a ROS Noetic container with the ROS "core" version (most lightweight installation) that is running Ubuntu 20.04 Focal Fossa, we find the right tag in the list and execute the following command in our terminal:
+
+```bash
+sudo docker pull ros:noetic-ros-core-focal
+```
+
+Then, the image gets downloaded automatically. It is as easy as that.
+
+### 3.3 How to start, stop and delete containers
+
+Now that we have successfully pulled our ROS image, we can instantiate a container from it!
+
+#### Instantiating and starting a container
+
+All we have to do is execute a `docker run` command with all the configurations we want to pass so that the container acts as we want it to.
+
+```bash
+sudo docker run -it --network host --name ros_test --privileged noetic-ros-core-focal bash
+```
+
+This will create the container and directly opens an interactive shell.
+A very important resource for you will be the list of different flags you can give to the `docker run` command. You can access the according Docker docs [here](https://docs.docker.com/engine/reference/commandline/run/).
+
+Anyway, here is a short explanation of all the tags used in the command above:
+
+| Flag (/Command)         | Description                                                                                                                              |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `docker run`            | Initiates the creation and execution of a Docker container.                                                                              |
+| `-it`                   | Allocates a pseudo-TTY and keeps STDIN open, allowing interactive terminal access.                                                       |
+| `--network host`        | Connects the container to the host's network stack, sharing the network namespace with the host.                                         |
+| `--name ros_test`       | Assigns the name "ros_test" to the Docker container.                                                                                     |
+| `--privileged`          | Grants extended privileges to the container, allowing it to perform tasks that would otherwise be restricted.                            |
+| `noetic-ros-core-focal` | Specifies the Docker image to be used for the container, in this case, an image with ROS Noetic installed on Ubuntu Focal Fossa (20.04). |
+| `bash`                  | Overrides the default command specified in the Docker image and launches the Bash shell instead.                                         |
+
+When you have the container shell open, you can execute `roscore` and see it starting up. When you are running Linux and also have ROS installed there, you also can open another terminal and check the running nodes created by the roscore inside the containers using `rosnode list`. This is working because we used the `--network host` flag, which makes the container share the network with its underlying host (for other programs, it looks like the roscore is running on the host ... from a network perspective). Creating Docker networks is a topic that is a bit more advanced, so I will touch on it in the _Limitations_ section
+
+#### Exiting a container
+
+If you are inside an interactive shell of the container and want to exit it just enter `exit`. This will also shut down the container. If you set the `--restart` flag (you can find the documentation [here](https://docs.docker.com/engine/reference/commandline/run/#restart)) it can also remain active after you exit the terminal.
+
+#### Stopping a container
+
+Assuming you have your container still running and active but want to stop it, you can simply type:
+
+```bash
+sudo docker stop <CONTAINER_NAME/CONTAINER_ID>
+```
+
+#### Deleting a container
+
+If you want to remove a container entirely, you first need to stop it (see above). Then, you can remove it with the following command:
+
+```bash
+sudo docker rm <CONTAINER_NAME/CONTAINER_ID>
+```
+
+### 3.4 How to build and delete images
+
+#### Building images
+
+Now, let's talk about how to build our own Docker images. We have already seen earlier how a Dockerfile looks. Assuming we have this Dockerfile and it has the standard name, which is also "Dockerfile", we only need to navigate to the directory of the dockerfile and execute the `docker build` command:
+
+```bash
+sudo docker build --tag my_custom_image:latest .
+```
+
+Instead of the "." you can also define the relative directory to where the Dockerfile is located.
+More information about how to work with Docker build can be found in Docker's [official documentation](https://docs.docker.com/engine/reference/commandline/build/).
+
+#### Deleting images
+
+If you want to delete an image, you first have to make sure that there are no runnning or stopped containers that are based on the image you want to remove.
+After you did that, you can execute the command:
+
+```bash
+sudo docker rmi <IMAGE_NAME:TAG/IMAGE_ID>
+```
+
+This will remove the image from your system. Please keep in mind that Docker still stores the layers of the image (when you observe the Dockerfile, you can see the different command blocks like `FROM`, `RUN`, etc.). These are still cached. If you want to prune the Docker builder cache, type:
+
+```bash
+sudo docker builder prune
+```
+
+Confirm and you will free up a lot of space on your drive ;).
+
+### 3.5 How to get information about your existing images and containers
+
+#### Getting information about your images
+
+To see which images you have on your system, you can use the following command:
+
+```bash
+sudo docker images
+```
+
+It will list the images and give you some basic information that's good to know. Here is an example output of that command:
+![Output of the docker images command](docker_images_command.png)
+
+#### Getting information about your containers
+
+If you want to list all the containers that are existing on your system currently, use this command:
+
+```bash
+sudo docker ps -a
+```
+
+Where the `-a` flag simply lists also the containers that are stopped at the moment. So, if you ommit this flag, you only list the running ones. Let's see an example output of the command:
+![Output of the docker ps -a command](docker_ps_command.png)
+
+#### Getting information about one specific container
+
+When you want to list all the configuration information about one specific container, use the `docker inspect` command.
+
+```bash
+sudo docker inspect <CONTAINER_NAME/CONTAINER_ID>
+```
+
+This will give you a very long JSON that includes a lot of information, from network specifications.
+
+### 3.6 How to use Docker compose commands
+
+As mentioned multiple times already, it is useful to use Docker Compose for multi-container setups. The commands are fairly simple. Assuming we have everything set up a compose file like mentioned above in our ball picking project, we can use the following commands to manage our setup:
+
+#### Building images using Docker Compose
+
+When everything is configured correctly, you can build the images like this:
+
+```
+sudo docker compose build
+```
+
+Sometimes it can be useful to build without cache, for example when you want to copy in a new entrypoint script into the container. Docker does not recognize changes inside the bash script as something that should cancel its caching approach, so you need to build without cache to copy the file into your updated image.
+simply modify the build command like this:
+
+```bash
+sudo docker compose build --no-cache
+```
+
+#### Running your containers with Docker Compose
+
+If you want to be quick, you can skip the build command above and directly use this, as it also builds the images if necessary. However, the `up` command starts your containers. Execute it in the directory of your compose file:
+
+```bash
+sudo docker compose up
+```
+
+And if you configured stuff to be executed automatically, you can see all the command line output in your terminal. If you want to run it in the backgrond, at the `-d` (detached) flag.
+
+#### Stopping your containers with Docker Compose
+
+If you ran `docker compose up` in the foreground, you can simply hit `CTRL+C` to stop the containers. Otherwise, you can type the following command in the directory where your compose file is:
+
+```bash
+sudo docker compose stop
+```
+
+This stops the container. If you want to remove the containers entirely (what is common when you are using containers properly, but maybe not so good for our use case), you can use the following command instead.
+
+```bash
+sudo docker compose downn
+```
+
+That should be all you need to know when it comes to Docker Compose ... think ;)
+
+### 3.7 Basic debugging tools for Docker
+
+In terms of debugging, I did not really leverage the full potential of Docker's tools, I guess. But a very helpful command is `docker logs`, which can give you the CLI outputs of a container, also after it crashed (as they get saved).
+You can use this command:
+
+```bash
+sudo docker logs <CONTAINER_NAME/CONTAINER_ID>
+```
+
+This gives you the container's CLI output. If you want to get more intricate, refer to the official Docker [documentation](https://docs.docker.com/engine/reference/commandline/logs/).
