@@ -1,9 +1,12 @@
 # Ball Picking Project
 
 This repository acts as the main repository to be deployed on the Agile-X Scout2.0 robot for the AUS/IFRoS lab 2023 project of searching for and picking up tennis balls.
+<br><br>
+**Created by:** <br>
+Kevin Schmidt: cbsx3q@inf.elte.hu
 
 <p align="center">
-    <img src="./docs/robot_image.jpg" height="500" alt="Your image description">
+    <img src="./docs/img/robot_image.jpg" height="500" alt="Your image description">
 </p>
 
 ## Architecture
