@@ -12,11 +12,11 @@ This repository acts as the main repository to be deployed on the Agile-X Scout2
 
 The mobile base uses LiDAR and IMU data to localize itself and map the environment using GMapping. Based on that, the mobile base can either autonomously explore the area or approach a 3D world coordinate given to it by the ball detection module.
 
-![Architecture diagram of the mobile base](./docs/mobile_base_architecture.png)
+![Architecture diagram of the mobile base](./docs/img/mobile_base_architecture.png)
 
 ### Visualization of autonomous exploration
 
-![Video of the robot exploring the area autonomously](./docs/costmap_exploration.png)
+![Video of the robot exploring the area autonomously](./docs/img/costmap_exploration.png)
 
 ## Setup
 
