@@ -13,7 +13,7 @@ Kevin Schmidt: cbsx3q@inf.elte.hu
 | Zeljko Jovanovic    | Robotic arm kinematics & ball grabbing |
 | Moshin Kabir        | Ball detection & localization          |
 | Kevin Schmidt       | Mobile base SLAM & navigation          |
-| Sivadinesh Ponjaran | Emotional support                      |
+| Sivadinesh Ponjaran | Emotional support engineer             |
 
 <p align="center">
     <img src="./docs/img/robot_image.jpg" height="500" alt="Your image description">
