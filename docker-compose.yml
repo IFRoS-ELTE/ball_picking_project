@@ -1,11 +1,13 @@
 version: "3.9"
 services:
+  # ROS Master Service
   ros_master:
     image: ros:noetic-ros-base-focal
     container_name: ros_noetic_master
     network_mode: "host"
     command: roscore
 
+  # RoboSense LiDAR Driver Service
   bp_r1_lidar_service:
     build:
       context: ./robosense_lidar_module/docker
@@ -21,8 +23,10 @@ services:
       - DISPLAY
     depends_on:
       - ros_master
+    # Uncomment the following line for debugging:
     # entrypoint: ["tail", "-f", "/dev/null"]
 
+  # Xsens IMU Driver Service
   bp_r1_imu_service:
     build:
       context: ./xsens_imu_module/docker
@@ -38,8 +42,10 @@ services:
       - DISPLAY
     depends_on:
       - ros_master
+    # Uncomment the following line for debugging:
     # entrypoint: ["tail", "-f", "/dev/null"]
 
+  # 2D SLAM Service
   bp_r1_slam_service:
     build:
       context: ./scout2_2d_slam_module/docker
@@ -55,8 +61,10 @@ services:
       - DISPLAY
     depends_on:
       - ros_master
+    # Uncomment the following line for debugging:
     # entrypoint: ["tail", "-f", "/dev/null"]
 
+  # Exploration Module Service
   bp_r1_exp_service:
     build:
       context: ./exploration_module/docker
@@ -74,4 +82,5 @@ services:
     depends_on:
       - ros_master
       - bp_r1_slam_service
+    # Uncomment the following line for debugging:
     # entrypoint: ["tail", "-f", "/dev/null"]
