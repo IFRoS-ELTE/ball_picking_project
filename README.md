@@ -25,7 +25,9 @@ Kevin Schmidt: cbsx3q@inf.elte.hu
 
 ### Project architecture
 
-The project architecture, including the containerization approach, is described in detail on [this page](https://github.com/IFRoS-ELTE/ball_picking_project/blob/main/docs/docker.md).
+The general project architecture, including the containerization approach, is described in detail on [this page](https://github.com/IFRoS-ELTE/ball_picking_project/blob/main/docs/docker.md).
+
+This repository only includes submodules as well as a compose file and some necessary scripts to set everything up correctly. When cloning the repository, all the code is included as submodules, which will also have their own Docker environment. The compose file of this repository is used to manage all the containers that get created using the submodules, which, in consequence, starts and stops the entire pipeline.
 
 ### Arm actuation
 
@@ -81,7 +83,7 @@ Sets up the CAN interface to communicate with the mobile base
 ./can_setup.bash
 ```
 
-### 2. Build and launch the containers
+### 4. Build and launch the containers
 
 Now, you can build and/or start the project:
 
