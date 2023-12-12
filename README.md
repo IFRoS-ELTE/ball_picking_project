@@ -1,6 +1,8 @@
 # Ball Picking Project
 
-This repository acts as the main repository to be deployed on the Agile-X Scout2.0 robot for the AUS/IFRoS lab 2023 project of searching for and picking up tennis balls.
+This repository acts as the main repository to be deployed on the Agile-X Scout2.0 robot Silvanus for the ELTE AUS/IFRoS lab 2023.
+
+**The objective of the project** was to implement a system on Silvanus that enables it to autonomously explore an navigate an unknown outdoor area, searching for tennis balls. If a tennis ball is spotted, the robot should approach it, pick it up using the attached robotic arm and place it inside a bucket that is attached on the side of the robot.
 <br><br>
 **Created by:** <br>
 Kevin Schmidt: cbsx3q@inf.elte.hu
