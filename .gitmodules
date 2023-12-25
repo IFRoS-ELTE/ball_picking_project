@@ -11,3 +11,6 @@
 [submodule "exploration_module"]
 	path = exploration_module
 	url = https://github.com/IFRoS-ELTE/exploration_module.git
+[submodule "Detection_and_Manipulation"]
+	path = Detection_and_Manipulation
+	url = https://github.com/IFRoS-ELTE/Detection_and_Manipulation.git
